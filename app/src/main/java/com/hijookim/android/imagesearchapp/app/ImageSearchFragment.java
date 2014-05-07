@@ -56,7 +56,7 @@ public class ImageSearchFragment extends Fragment implements OnImageQueryTaskExe
         return instance;
     }
 
-    public ImageSearchFragment() {
+    private ImageSearchFragment() {
         // Required empty public constructor
     }
 
@@ -122,21 +122,24 @@ public class ImageSearchFragment extends Fragment implements OnImageQueryTaskExe
 
     @Override
     public void onImageQueryTaskComplete(Map<String, Object> imageResult) {
+
         Context context = getActivity();
-        Intent intent = new Intent(context, ImageGridViewActivity.class);
-        Bundle bundle = new Bundle();
+        if (context != null) {
+            Intent intent = new Intent(context, ImageGridViewActivity.class);
+            Bundle bundle = new Bundle();
 
-        ArrayList<String> urls = (ArrayList<String>) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST);
-        ArrayList<Integer> pages = (ArrayList<Integer>) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_PAGES);
-        String keyword = (String) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_KEYWORD);
-        Integer currentPage = (Integer) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_CURRENT_PAGE);
+            ArrayList<String> urls = (ArrayList<String>) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST);
+            ArrayList<Integer> pages = (ArrayList<Integer>) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_PAGES);
+            String keyword = (String) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_KEYWORD);
+            Double currentPage = (Double) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_CURRENT_PAGE);
 
-        bundle.putStringArrayList(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST, urls);
-        bundle.putIntegerArrayList(ImageGridViewFragment.EXTRA_IMAGE_QUERY_PAGES, pages);
-        bundle.putString(ImageGridViewFragment.EXTRA_IMAGE_QUERY_KEYWORD, keyword);
-        bundle.putInt(ImageGridViewFragment.EXTRA_IMAGE_QUERY_CURRENT_PAGE, currentPage);
-        intent.putExtras(bundle);
+            bundle.putStringArrayList(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST, urls);
+            bundle.putIntegerArrayList(ImageGridViewFragment.EXTRA_IMAGE_QUERY_PAGES, pages);
+            bundle.putString(ImageGridViewFragment.EXTRA_IMAGE_QUERY_KEYWORD, keyword);
+            bundle.putInt(ImageGridViewFragment.EXTRA_IMAGE_QUERY_CURRENT_PAGE, currentPage.intValue());
+            intent.putExtras(bundle);
 
-        context.startActivity(intent);
+            context.startActivity(intent);
+        }
     }
 }

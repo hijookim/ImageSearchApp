@@ -13,12 +13,14 @@ public class ImageSearchActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.image_search_activity);
 
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment = fm.findFragmentById(R.id.container);
+        if (savedInstanceState == null) {
+            FragmentManager fm = getSupportFragmentManager();
+            Fragment fragment = fm.findFragmentById(R.id.container);
 
-        if (fragment == null) {
-            fragment = ImageSearchFragment.getInstance(fm, new Bundle());
-            fm.beginTransaction().add(R.id.container, fragment).commit();
+            if (fragment == null) {
+                fragment = ImageSearchFragment.getInstance(fm, new Bundle());
+                fm.beginTransaction().add(R.id.container, fragment).commit();
+            }
         }
     }
 

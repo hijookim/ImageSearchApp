@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 
 import com.hijookim.android.imagesearchapp.app.ImageGridViewFragment;
 import com.hijookim.android.imagesearchapp.app.OnImageQueryTaskExecuted;
+import com.hijookim.android.imagesearchapp.app.model.ImageResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,7 +17,7 @@ import java.util.Map;
 public class ImageSearchTask extends AsyncTask<Void, Map<String, Object>, Map<String, Object>> {
 
     private OnImageQueryTaskExecuted mInstance;
-    private Map<String, Object> mImageSearchResponse;
+    private ImageResult mImageSearchResponse;
     private String mKeyword;
     private String mPageStartIndex;
 
@@ -35,7 +36,7 @@ public class ImageSearchTask extends AsyncTask<Void, Map<String, Object>, Map<St
         if (mImageSearchResponse != null) {
             ArrayList<String> imageUrls = ImageSearchUtils.getImageUrls(mImageSearchResponse, null);
             ArrayList<Integer> imagePages = ImageSearchUtils.getImageSearchPages(mImageSearchResponse);
-            Integer currentPage = ImageSearchUtils.getCurrentPageIndex(mImageSearchResponse);
+            Double currentPage = ImageSearchUtils.getCurrentPageIndex(mImageSearchResponse);
 
             imageUrlMap.put(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST, imageUrls);
             imageUrlMap.put(ImageGridViewFragment.EXTRA_IMAGE_QUERY_PAGES, imagePages);

@@ -9,6 +9,11 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.hijookim.android.imagesearchapp.app.model.Cursor;
+import com.hijookim.android.imagesearchapp.app.model.ImageResult;
+import com.hijookim.android.imagesearchapp.app.model.Pages;
+import com.hijookim.android.imagesearchapp.app.model.ResponseData;
+import com.hijookim.android.imagesearchapp.app.model.Results;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -27,7 +32,6 @@ import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ImageSearchUtils {
 
@@ -101,9 +105,9 @@ public class ImageSearchUtils {
         return pastQueryWords;
     }
 
-    public static Map<String, Object> queryImage(String keywords, String pageStartIndex) {
+    public static ImageResult queryImage(String keywords, String pageStartIndex) {
         List<String> imageUrls;
-        Map<String, Object> result = null;
+        ImageResult result = null;
 
         if (keywords == null || TextUtils.isEmpty(keywords)) {
             return null;
@@ -122,7 +126,8 @@ public class ImageSearchUtils {
             url.append(String.valueOf(pageStartIndex));
 
             HttpGet queryRequest = new HttpGet(url.toString());
-            result = makeRequest(queryRequest, Map.class);
+            result = makeRequest(queryRequest, ImageResult.class);
+            //result = makeRequest(queryRequest, Map.class);
             //imageUrls = convertResultToImageUrlArray(result);
         } catch (IOException e) {
             Log.v(TAG, "error making image search request");
@@ -186,18 +191,18 @@ public class ImageSearchUtils {
         return obj;
     }
 
-    public static ArrayList<String> getImageUrls(Map<String, Object> imageSearchResponse, ArrayList<String> imageUrls) {
+    public static ArrayList<String> getImageUrls(ImageResult imageSearchResponse, ArrayList<String> imageUrls) {
         if (imageUrls == null) {
             imageUrls = new ArrayList<String>();
         }
 
-        Map<String, Object> responseData = (Map<String, Object>) imageSearchResponse.get("responseData");
-        if (responseData != null && responseData.get("results") != null) {
+        ResponseData responseData = imageSearchResponse.getResponseData();
+        if (responseData != null && responseData.getResults() != null) {
 
-            List<Object> results = (List<Object>) ((Map<String, Object>) imageSearchResponse.get("responseData")).get("results");
+            ArrayList<Results> results = responseData.getResults();
 
-            for (Object result : results) {
-                String imageUrl = (String) ((Map<String, Object>) result).get("url");
+            for (Results result : results) {
+                String imageUrl = result.getUrl();
                 if (!TextUtils.isEmpty(imageUrl)) {
                     imageUrls.add(imageUrl);
                 }
@@ -206,21 +211,22 @@ public class ImageSearchUtils {
         return imageUrls;
     }
 
-    public static ArrayList<Integer> getImageSearchPages(Map<String, Object> imageSearchResponse) {
+    public static ArrayList<Integer> getImageSearchPages(ImageResult imageSearchResponse) {
 
         ArrayList<Integer> imagePages = new ArrayList<Integer>();
 
-        Map<String, Object> responseData = (Map<String, Object>) imageSearchResponse.get("responseData");
-        if (responseData != null && responseData.get("cursor") != null) {
-            Map<String, Object> cursor = (Map<String, Object>) responseData.get("cursor");
+        ResponseData responseData = imageSearchResponse.getResponseData();
+        if (responseData != null && responseData.getCursor() != null) {
+            Cursor cursor = responseData.getCursor();
 
-            int currentPageIndex = (Integer) cursor.get("currentPageIndex");
-            int nextPageIndex = currentPageIndex + 1;
-            ArrayList<Object> pages = (ArrayList<Object>) cursor.get("pages");
+            ArrayList<Pages> pages = cursor.getPages();
 
-            for (Object page : pages) {
-                Map<String, Object> pageMap = (Map<String, Object>) page;
-                String startVal = (String)pageMap.get("start");
+            if (pages == null || pages.isEmpty()) {
+                return imagePages;
+            }
+
+            for (Pages page : pages) {
+                String startVal = page.getStart();
                 if (!TextUtils.isEmpty(startVal)) {
                     imagePages.add(Integer.valueOf(startVal));
                 }
@@ -229,14 +235,13 @@ public class ImageSearchUtils {
         return imagePages;
     }
 
-    public static int getCurrentPageIndex(Map<String, Object> imageSearchResponse) {
-        int currentPageIndex = 0;
+    public static double getCurrentPageIndex(ImageResult imageSearchResponse) {
+        double currentPageIndex = 0;
 
-        Map<String, Object> responseData = (Map<String, Object>) imageSearchResponse.get("responseData");
-        if (responseData != null && responseData.get("cursor") != null) {
-            Map<String, Object> cursor = (Map<String, Object>) responseData.get("cursor");
-
-            currentPageIndex = (Integer) cursor.get("currentPageIndex");
+        ResponseData responseData = imageSearchResponse.getResponseData();
+        if (responseData != null && responseData.getCursor() != null) {
+            Cursor cursor = responseData.getCursor();
+            currentPageIndex = cursor.getCurrentPageIndex();
         }
         return currentPageIndex;
     }

@@ -60,7 +60,7 @@ public class ImageGridViewFragment extends Fragment implements OnImageQueryTaskE
         return FRAGMENT_TAG;
     }
 
-    public ImageGridViewFragment() {
+    private ImageGridViewFragment() {
         // Required empty public constructor
     }
 
@@ -110,7 +110,7 @@ public class ImageGridViewFragment extends Fragment implements OnImageQueryTaskE
     public void onImageQueryTaskComplete(Map<String, Object> imageResult) {
         //mImageGridViewAdapter.notifyDataSetChanged();
         ArrayList<String> imageUrls = (ArrayList<String>) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST);
-        mCurrentPage = (Integer) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_CURRENT_PAGE);
+        mCurrentPage = ((Double) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_CURRENT_PAGE)).intValue();
         mImageUrls.addAll(imageUrls);
         mImageGridViewAdapter.addMoreImageUrls(imageUrls);
     }
