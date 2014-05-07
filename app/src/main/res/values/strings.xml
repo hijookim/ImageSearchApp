@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">ImageSearchApp</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="search_editor_hint">Enter search keywords</string>
+    <string name="search_submit">Search!</string>
+    <string name="title_activity_image_grid_view">ImageGridViewActivity</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="past_search">Past search queries:</string>
+
+</resources>
