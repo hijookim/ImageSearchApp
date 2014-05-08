@@ -94,6 +94,7 @@ public class ImageSearchFragment extends Fragment implements OnImageQueryTaskExe
             ArrayList<String> updatedImageQueries = ImageSearchUtils.readQueryKeywordsFromLocalStorage(getActivity());
             mImageQueryListFragment.refreshPastImageQueryList(updatedImageQueries);
         }
+        mSearchEditor.setText("");
     }
 
     private void attachImageQueryListFragment(Bundle bundle) {

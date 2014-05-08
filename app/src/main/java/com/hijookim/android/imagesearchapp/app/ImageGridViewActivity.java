@@ -18,14 +18,7 @@ public class ImageGridViewActivity extends FragmentActivity {
             Fragment fragment = fm.findFragmentById(R.id.grid_view_container);
 
             if (fragment == null) {
-                Bundle bundle;
-                if (savedInstanceState != null) {
-                    bundle = new Bundle(savedInstanceState);
-                    bundle.putStringArrayList(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST, savedInstanceState.getStringArrayList(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST));
-                } else {
-                    bundle = new Bundle();
-                }
-                bundle = getIntent() != null ? getIntent().getExtras() : null;
+                Bundle bundle = getIntent() != null ? getIntent().getExtras() : new Bundle();
                 fragment = ImageGridViewFragment.getInstance(fm, bundle);
                 fm.beginTransaction().add(R.id.grid_view_container, fragment).commit();
             }
