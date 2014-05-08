@@ -31,7 +31,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.List;
 
 public class ImageSearchUtils {
 
@@ -106,7 +105,6 @@ public class ImageSearchUtils {
     }
 
     public static ImageResult queryImage(String keywords, String pageStartIndex) {
-        List<String> imageUrls;
         ImageResult result = null;
 
         if (keywords == null || TextUtils.isEmpty(keywords)) {
@@ -127,8 +125,7 @@ public class ImageSearchUtils {
 
             HttpGet queryRequest = new HttpGet(url.toString());
             result = makeRequest(queryRequest, ImageResult.class);
-            //result = makeRequest(queryRequest, Map.class);
-            //imageUrls = convertResultToImageUrlArray(result);
+
         } catch (IOException e) {
             Log.v(TAG, "error making image search request");
         }
@@ -141,7 +138,7 @@ public class ImageSearchUtils {
         if (request == null) {
             return null;
         }
-        String responseStr = "";
+
         T responseObj = null;
 
         request.addHeader("Accept", "application/json");
@@ -153,7 +150,6 @@ public class ImageSearchUtils {
 
             if (statusCode == 200) {
                 InputStream instream = entity.getContent();
-                //responseStr = convertStreamToString(instream);
                 responseObj = convertObjectFromJson(instream, clazz);
                 instream.close();
             }

@@ -47,15 +47,11 @@ public class ImageQueryAdapter extends ArrayAdapter<String> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View queryItemView = convertView;
-        QueryItemHolder holder = null;
+        QueryItemHolder holder;
 
         if (queryItemView == null) {
             LayoutInflater inflater = ((Activity)mContext).getLayoutInflater();
             queryItemView = inflater.inflate(mLayoutResourceId, parent, false);
-
-            if (queryItemView == null) {
-                return null;
-            }
 
             holder = new QueryItemHolder();
             holder.mImageQuery = (TextView) queryItemView.findViewById(R.id.image_query_keyword);
@@ -64,8 +60,8 @@ public class ImageQueryAdapter extends ArrayAdapter<String> {
             holder = (QueryItemHolder) queryItemView.getTag();
         }
 
-        if (position >= 0 && position < mImageQueries.size()) {
-            String query = mImageQueries.get(position);
+        String query = getItem(position);
+        if (query != null) {
             holder.mImageQuery.setText(query);
         }
 
@@ -105,10 +101,8 @@ public class ImageQueryAdapter extends ArrayAdapter<String> {
         return filter;
     }
 
-//    @Override
-//    public void onItemClick(AdapterView<?> adapterView, View view, int pos, long l) {
-//        Intent i = new Intent(this, ProductActivity.class);
-//        i.putExtra("item_id", manager.getItemIdAtIndex(pos));
-//        startActivity(i);
-//    }
+    public void setImageQueryList(ArrayList<String> queryList) {
+        mImageQueries = queryList;
+    }
+
 }

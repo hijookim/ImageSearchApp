@@ -3,6 +3,7 @@ package com.hijookim.android.imagesearchapp.app;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ import java.util.Map;
  */
 public class ImageGridViewFragment extends Fragment implements OnImageQueryTaskExecuted {
 
+    public static final String TAG = "ImageGridViewFragment";
     public static final String FRAGMENT_TAG = "fragment_image_grid_view";
     public static final String EXTRA_IMAGE_URL_LIST = "extra_image_url_list";
     public static final String EXTRA_IMAGE_QUERY_PAGES = "extra_image_query_pages";
@@ -60,14 +62,14 @@ public class ImageGridViewFragment extends Fragment implements OnImageQueryTaskE
         return FRAGMENT_TAG;
     }
 
-    private ImageGridViewFragment() {
+    public ImageGridViewFragment() {
         // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {   // do we even need this?
+        if (getArguments() != null) {
             Bundle bundle = getArguments();
             mImageUrls = bundle.getStringArrayList(EXTRA_IMAGE_URL_LIST);
             mImagePages = bundle.getIntegerArrayList(EXTRA_IMAGE_QUERY_PAGES);
@@ -108,11 +110,14 @@ public class ImageGridViewFragment extends Fragment implements OnImageQueryTaskE
 
     @Override
     public void onImageQueryTaskComplete(Map<String, Object> imageResult) {
-        //mImageGridViewAdapter.notifyDataSetChanged();
-        ArrayList<String> imageUrls = (ArrayList<String>) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST);
-        mCurrentPage = ((Double) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_CURRENT_PAGE)).intValue();
-        mImageUrls.addAll(imageUrls);
-        mImageGridViewAdapter.addMoreImageUrls(imageUrls);
+        try {
+            ArrayList<String> imageUrls = (ArrayList<String>) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST);
+            mCurrentPage = ((Double) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_CURRENT_PAGE)).intValue();
+            mImageUrls.addAll(imageUrls);
+            mImageGridViewAdapter.addMoreImageUrls(imageUrls);
+        } catch (ClassCastException e) {
+            Log.v(TAG, "wrong key mapped to the object", e);
+        }
     }
 
 }

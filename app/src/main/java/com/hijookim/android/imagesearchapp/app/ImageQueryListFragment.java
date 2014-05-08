@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -19,11 +20,7 @@ import java.util.Map;
 
 
 /**
- * A fragment representing a list of Items.
- * <p />
- * <p />
- * Activities containing this fragment MUST implement the {@link Callbacks}
- * interface.
+ * A fragment representing a list of previously searched image query words
  */
 public class ImageQueryListFragment extends ListFragment implements OnImageQueryTaskExecuted {
 
@@ -32,6 +29,7 @@ public class ImageQueryListFragment extends ListFragment implements OnImageQuery
 
     private OnImageQueryTaskExecuted mOnImageQueryTaskExecuted = this;
 
+    private ImageQueryAdapter mQueryListAdapter;
     private ListView mListView;
     private ArrayList<String> mImageQueryList;
 
@@ -57,18 +55,16 @@ public class ImageQueryListFragment extends ListFragment implements OnImageQuery
         return FRAGMENT_TAG;
     }
 
-    private ImageQueryListFragment() {
+    public ImageQueryListFragment() {
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            mImageQueryList = getArguments().getStringArrayList(ImageSearchFragment.EXTRA_PAST_IMAGE_QUERY_LIST);
-        }
-
-        setListAdapter(new ImageQueryAdapter(getActivity(), R.layout.query_item, mImageQueryList));
+        mImageQueryList = ImageSearchUtils.readQueryKeywordsFromLocalStorage(getActivity());
+        mQueryListAdapter = new ImageQueryAdapter(getActivity(), R.layout.query_item, mImageQueryList);
+        setListAdapter(mQueryListAdapter);
 
     }
 
@@ -76,11 +72,9 @@ public class ImageQueryListFragment extends ListFragment implements OnImageQuery
         AdapterView.OnItemClickListener listener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (mImageQueryList != null && position >= 0 && position < mImageQueryList.size()) {
-                    String queryKeyword = mImageQueryList.get(position);
-
+                if (mQueryListAdapter != null && mQueryListAdapter.getCount() > position && position >= 0) {
+                    String queryKeyword = mQueryListAdapter.getItem(position);
                     ImageSearchUtils.writeQueryKeywordsToLocalStorage(getActivity(), queryKeyword);
-                    String pageIndex = "0";
 
                     new ImageSearchTask(mOnImageQueryTaskExecuted, queryKeyword, null).execute();
                 }
@@ -106,8 +100,12 @@ public class ImageQueryListFragment extends ListFragment implements OnImageQuery
     }
 
     public void refreshPastImageQueryList(ArrayList<String> queries) {
-        mImageQueryList = queries;
-        //
+        if (queries != null && mQueryListAdapter != null && mListView != null) {
+            mQueryListAdapter.setImageQueryList(queries);
+            mQueryListAdapter.notifyDataSetChanged();
+            mListView.invalidateViews();
+            mListView.smoothScrollToPosition(0);
+        }
     }
 
     @Override
@@ -117,15 +115,20 @@ public class ImageQueryListFragment extends ListFragment implements OnImageQuery
             Intent intent = new Intent(context, ImageGridViewActivity.class);
             Bundle bundle = new Bundle();
 
-            ArrayList<String> urls = (ArrayList<String>) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST);
-            ArrayList<Integer> pages = (ArrayList<Integer>) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_PAGES);
-            String keyword = (String) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_KEYWORD);
-            Double currentPage = (Double) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_CURRENT_PAGE);
+            try {
+                ArrayList<String> urls = (ArrayList<String>) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST);
+                ArrayList<Integer> pages = (ArrayList<Integer>) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_PAGES);
+                String keyword = (String) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_KEYWORD);
+                Double currentPage = (Double) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_CURRENT_PAGE);
 
-            bundle.putStringArrayList(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST, urls);
-            bundle.putIntegerArrayList(ImageGridViewFragment.EXTRA_IMAGE_QUERY_PAGES, pages);
-            bundle.putString(ImageGridViewFragment.EXTRA_IMAGE_QUERY_KEYWORD, keyword);
-            bundle.putInt(ImageGridViewFragment.EXTRA_IMAGE_QUERY_CURRENT_PAGE, currentPage.intValue());
+                bundle.putStringArrayList(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST, urls);
+                bundle.putIntegerArrayList(ImageGridViewFragment.EXTRA_IMAGE_QUERY_PAGES, pages);
+                bundle.putString(ImageGridViewFragment.EXTRA_IMAGE_QUERY_KEYWORD, keyword);
+                bundle.putInt(ImageGridViewFragment.EXTRA_IMAGE_QUERY_CURRENT_PAGE, currentPage.intValue());
+
+            } catch (ClassCastException e) {
+                Log.v(TAG, "wrong objects mapped to the keys", e);
+            }
             intent.putExtras(bundle);
 
             context.startActivity(intent);
