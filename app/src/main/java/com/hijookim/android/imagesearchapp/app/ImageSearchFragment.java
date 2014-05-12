@@ -15,7 +15,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.hijookim.android.imagesearchapp.app.utils.ImageSearchTask;
-import com.hijookim.android.imagesearchapp.app.utils.ImageSearchUtils;
+import com.hijookim.android.imagesearchapp.app.utils.SaveQueryWordTask;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -78,11 +78,8 @@ public class ImageSearchFragment extends Fragment implements OnImageQueryTaskExe
         mSearchSubmitButton = (Button) rootView.findViewById(R.id.submit_button);
         mSearchSubmitButton.setOnClickListener(getSubmitOnClickListener());
 
-        ArrayList<String> pastImageQueries = ImageSearchUtils.readQueryKeywordsFromLocalStorage(getActivity());
-        if (pastImageQueries != null && !pastImageQueries.isEmpty()) {
-            Bundle bundle = new Bundle();
-            attachImageQueryListFragment(bundle);
-        }
+        attachImageQueryListFragment(new Bundle());
+
 
         return rootView;
     }
@@ -90,10 +87,6 @@ public class ImageSearchFragment extends Fragment implements OnImageQueryTaskExe
     @Override
     public void onResume() {
         super.onResume();
-        if (mImageQueryListFragment != null) {
-            ArrayList<String> updatedImageQueries = ImageSearchUtils.readQueryKeywordsFromLocalStorage(getActivity());
-            mImageQueryListFragment.refreshPastImageQueryList(updatedImageQueries);
-        }
         mSearchEditor.setText("");
     }
 
@@ -114,8 +107,7 @@ public class ImageSearchFragment extends Fragment implements OnImageQueryTaskExe
                 }
 
                 String queryKeyword = mSearchEditor.getText().toString();
-                ImageSearchUtils.writeQueryKeywordsToLocalStorage(getActivity(), queryKeyword);
-
+                new SaveQueryWordTask(getActivity(), queryKeyword).execute();
                 new ImageSearchTask(mOnImageQueryTaskExecuted, queryKeyword, null).execute();
             }
         };

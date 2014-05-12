@@ -13,21 +13,24 @@ import android.widget.ListView;
 
 import com.hijookim.android.imagesearchapp.app.utils.ImageQueryAdapter;
 import com.hijookim.android.imagesearchapp.app.utils.ImageSearchTask;
-import com.hijookim.android.imagesearchapp.app.utils.ImageSearchUtils;
+import com.hijookim.android.imagesearchapp.app.utils.ReadQueryWordTask;
+import com.hijookim.android.imagesearchapp.app.utils.SaveQueryWordTask;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 
 /**
  * A fragment representing a list of previously searched image query words
  */
-public class ImageQueryListFragment extends ListFragment implements OnImageQueryTaskExecuted {
+public class ImageQueryListFragment extends ListFragment implements OnImageQueryTaskExecuted, OnReadQueryWordTaskCompleted {
 
     private static final String TAG = "ImageQueryListFragment";
     private static final String FRAGMENT_TAG = "fragment_image_query_list";
 
     private OnImageQueryTaskExecuted mOnImageQueryTaskExecuted = this;
+    private OnReadQueryWordTaskCompleted mOnReadQueryWordTaskCompleted = this;
 
     private ImageQueryAdapter mQueryListAdapter;
     private ListView mListView;
@@ -62,7 +65,8 @@ public class ImageQueryListFragment extends ListFragment implements OnImageQuery
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mImageQueryList = ImageSearchUtils.readQueryKeywordsFromLocalStorage(getActivity());
+        //mImageQueryList = ImageSearchUtils.readQueryKeywordsFromLocalStorage(getActivity());
+        mImageQueryList = new ArrayList<String>();
         mQueryListAdapter = new ImageQueryAdapter(getActivity(), R.layout.query_item, mImageQueryList);
         setListAdapter(mQueryListAdapter);
 
@@ -74,7 +78,8 @@ public class ImageQueryListFragment extends ListFragment implements OnImageQuery
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 if (mQueryListAdapter != null && mQueryListAdapter.getCount() > position && position >= 0) {
                     String queryKeyword = mQueryListAdapter.getItem(position);
-                    ImageSearchUtils.writeQueryKeywordsToLocalStorage(getActivity(), queryKeyword);
+                    new SaveQueryWordTask(getActivity(), queryKeyword).execute();
+                    //ImageSearchUtils.writeQueryKeywordsToLocalStorage(getActivity(), queryKeyword);
 
                     new ImageSearchTask(mOnImageQueryTaskExecuted, queryKeyword, null).execute();
                 }
@@ -90,6 +95,7 @@ public class ImageQueryListFragment extends ListFragment implements OnImageQuery
             mListView = getListView();
             mListView.setOnItemClickListener(getImageQueryItemOnClickListener());
         }
+        new ReadQueryWordTask(getActivity(), mOnReadQueryWordTaskCompleted).execute();
     }
 
 
@@ -99,13 +105,17 @@ public class ImageQueryListFragment extends ListFragment implements OnImageQuery
 
     }
 
-    public void refreshPastImageQueryList(ArrayList<String> queries) {
+    public void refreshPastImageQueryList(List<String> queries) {
         if (queries != null && mQueryListAdapter != null && mListView != null) {
             mQueryListAdapter.setImageQueryList(queries);
             mQueryListAdapter.notifyDataSetChanged();
             mListView.invalidateViews();
             mListView.smoothScrollToPosition(0);
         }
+    }
+
+    public void onReadCompleted(List<String> queryWords) {
+        refreshPastImageQueryList(queryWords);
     }
 
     @Override

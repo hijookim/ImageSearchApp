@@ -8,7 +8,6 @@ import android.widget.BaseAdapter;
 import com.hijookim.android.imagesearchapp.app.image.SquareImageView;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static android.widget.ImageView.ScaleType.CENTER_INSIDE;
@@ -36,16 +35,10 @@ final class ImageGridViewAdapter extends BaseAdapter {
         Picasso.with(context) //
                 .load(url) //
                 .fit() //
+                .error(R.drawable.error_icon)
                 .into(view);
 
         return view;
-    }
-
-    public void addMoreImageUrls(ArrayList<String> additionalImageUrls) {
-        if (mImageUrls != null && additionalImageUrls != null) {
-            mImageUrls.addAll(additionalImageUrls);
-        }
-        notifyDataSetChanged();
     }
 
     @Override public int getCount() {

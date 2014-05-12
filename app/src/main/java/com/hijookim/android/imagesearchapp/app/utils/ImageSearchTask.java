@@ -1,6 +1,7 @@
 package com.hijookim.android.imagesearchapp.app.utils;
 
 import android.os.AsyncTask;
+import android.os.Trace;
 
 import com.hijookim.android.imagesearchapp.app.ImageGridViewFragment;
 import com.hijookim.android.imagesearchapp.app.OnImageQueryTaskExecuted;

@@ -1,8 +1,23 @@
-<GridView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/grid_view"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:listSelector="@null"
-    android:numColumns="@integer/image_num_cols"
-    android:scrollbarStyle="insideOverlay"
-    android:scrollbars="none" />
+    android:layout_height="match_parent">
+
+    <ProgressBar
+        android:id="@+id/spinner_progressbar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true" />
+
+
+    <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/grid_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:listSelector="@null"
+        android:numColumns="@integer/image_num_cols"
+        android:scrollbarStyle="insideOverlay"
+        android:scrollbars="none" />
+
+</RelativeLayout>

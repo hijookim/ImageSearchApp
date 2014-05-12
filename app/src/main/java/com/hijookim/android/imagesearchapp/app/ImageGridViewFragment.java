@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import com.hijookim.android.imagesearchapp.app.utils.EndlessScrollListener;
 import com.hijookim.android.imagesearchapp.app.utils.ImageSearchTask;
@@ -34,6 +35,7 @@ public class ImageGridViewFragment extends Fragment implements OnImageQueryTaskE
     private ImageGridViewAdapter mImageGridViewAdapter;
 
     private GridView mImageGridView;
+    private ProgressBar mProgressBar;
 
     private List<String> mImageUrls;
     private List<Integer> mImagePages;
@@ -97,6 +99,8 @@ public class ImageGridViewFragment extends Fragment implements OnImageQueryTaskE
                 customLoadMoreDataFromApi();
             }
         });
+        mProgressBar = (ProgressBar) rootView.findViewById(R.id.spinner_progressbar);
+        mProgressBar.setVisibility(View.VISIBLE);
 
         return rootView;
     }
@@ -114,7 +118,8 @@ public class ImageGridViewFragment extends Fragment implements OnImageQueryTaskE
             ArrayList<String> imageUrls = (ArrayList<String>) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_URL_LIST);
             mCurrentPage = ((Double) imageResult.get(ImageGridViewFragment.EXTRA_IMAGE_QUERY_CURRENT_PAGE)).intValue();
             mImageUrls.addAll(imageUrls);
-            mImageGridViewAdapter.addMoreImageUrls(imageUrls);
+            mImageGridViewAdapter.notifyDataSetChanged();
+            mProgressBar.setVisibility(View.GONE);
         } catch (ClassCastException e) {
             Log.v(TAG, "wrong key mapped to the object", e);
         }

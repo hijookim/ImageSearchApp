@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.hijookim.android.imagesearchapp.app.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ImageQueryAdapter extends ArrayAdapter<String> {
 
@@ -20,7 +21,7 @@ public class ImageQueryAdapter extends ArrayAdapter<String> {
 
     private Context mContext;
     private int mLayoutResourceId;
-    private ArrayList<String> mImageQueries;
+    private List<String> mImageQueries;
 
     public ImageQueryAdapter(Context context, int layoutResourceId, ArrayList<String> imageQueries) {
         super(context, layoutResourceId, imageQueries);
@@ -101,7 +102,7 @@ public class ImageQueryAdapter extends ArrayAdapter<String> {
         return filter;
     }
 
-    public void setImageQueryList(ArrayList<String> queryList) {
+    public void setImageQueryList(List<String> queryList) {
         mImageQueries = queryList;
     }
 
